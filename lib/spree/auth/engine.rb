@@ -45,6 +45,16 @@ module Spree
             Rails.configuration.cache_classes ? require(c) : load(c)
           end
         end
+        # EK-785 Fix uninitialized constant Spree::UserMailer
+        mailer_path = File.join(File.dirname(__FILE__), '../../mailers/spree/user_mailer.rb')
+        require mailer_path if File.exist?(mailer_path)
+
+        email_views_path = File.expand_path('../../../views/emails', __FILE__)
+        if Dir.exist?(email_views_path)
+          ActionMailer::Base.prepend_view_path(email_views_path)
+        end
+        # end of changes
+
         ApplicationController.send :include, Spree::AuthenticationHelpers
       end
 
